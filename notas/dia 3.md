@@ -66,7 +66,9 @@ A maven le podía pedir distintas tareas: GOALS
 √ Compilar las pruebas del proyecto > mvn test-compile
 √ Ejecutar las pruebas del proyecto > mvn test > Informes
 √ Empaquetar el proyecto > mvn package         > Fichero JAR (de empaquetado) Este es el que se distribuye / Instala
-Poner todo el código en automatico en la rama main
+√ Guardar el binario
+√ Generar unos informes con las pruebas
+√ Poner todo el código en automatico en la rama main (A falta de la autenticación)
 √ Borrado al final
     Por qué quiero borrar?
         Limpiar y que no queden cosas que más adelante me puedan dar problemas
@@ -113,4 +115,39 @@ Podríamos querer:
     Monto un circuito de Despliegue continuo: Instalar en producción lo ultimo que haya en la rama MAIN
                                                 o lo ultimo que tenga en un repositorio de artefactos
         
+        https://abbf4c126e64485abd1b1c93fa3965e1.vfs.cloud9.eu-west-1.amazonaws.com/job/Empaquetar%20proyecto%20Java/build?token=AQUI-UN-CODIGO        
+        https://abbf4c126e64485abd1b1c93fa3965e1.vfs.cloud9.eu-west-1.amazonaws.com/job/Empaquetar%20proyecto%20Java/buildWithParameters?token=AQUI-UN-CODIGO&NAVEGADOR=firefox&RAMA=desarrollo  
+Webhook ^
+
+
+Principal----
+            /
+    Desarrollo-----------------------------------
+        Equipo 1 - FrontEnd (UI)    /    /    /
+        Equipo 2 - Backend              /    /
+        Equipo 3 - Configuración de la BBDD /
         
+
+Selenium   > Lo puedo ejecutar en muchos entornos... a ver si en todos funciona bien...      
+Pruebas de una app web:    400 configuraciones diferentes
+    Edge
+    Firefox
+    Opera
+    Chrome Ultima version y en las 5 anteriores
+    Safari
+    
+    Windows 10
+    Windows 11
+    Windows 8
+    Ubuntu
+    Redhat
+    iOS
+    MacOS
+    
+    PCs
+    Tablets
+    Telefonos moviles
+    
+Diariamente vete probando en un PC con Windows y Chrome y en un telefono android con firefox
+
+Eso si... el dia que vayamos a pasar a prod... a fondo... comete las 400 configuraciones ooo las 3000
