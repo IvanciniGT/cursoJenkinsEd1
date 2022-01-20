@@ -1,0 +1,21 @@
+// Sintaxis declarativa.
+
+pipeline {
+    stages {
+        stage('Etapa 1') {
+            steps {
+                // Llamadas a plugins. Su sintaxis depende del plugin concreto que use...
+                // Y aqui me puedo encontrar con dificultades... Dependerá del plugin
+                // El que lo hayan documentado bien o no... para ver cómo hay que llamarlo.
+                
+                // Mostrar algo en el log de Jenkins
+                echo "Dentro de la etapa 1"
+            }
+        }
+        stage('Etapa 2') {
+            steps {
+                echo "Dentro de la etapa 2"
+            }
+        }
+    }
+}
