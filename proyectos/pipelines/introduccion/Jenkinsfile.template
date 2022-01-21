@@ -1,0 +1,62 @@
+// Sintaxis declarativa.
+// ETAPA: Compilacion
+// ETAPA: Pruebas
+// ETAPA: Empaquetado
+//
+
+pipeline {
+    
+    // Indica donde se debe ejecutar esta tarea
+    agent any 
+    
+    stages {
+        stage('Etapa 1') {
+            steps {
+                // Llamadas a plugins. Su sintaxis depende del plugin concreto que use...
+                // Y aqui me puedo encontrar con dificultades... Dependerá del plugin
+                // El que lo hayan documentado bien o no... para ver cómo hay que llamarlo.
+                
+                // Mostrar algo en el log de Jenkins
+                echo "Dentro de la etapa 1"
+                sh "exit 0"
+                echo "Acabando la etapa 1"
+            }
+            post {
+                always {
+                    echo "Salgo siempre que se ejecuta la etapa 1"
+                }
+                success {
+                    echo "Salgo cuando la etapa 1 se ejecutó correctamente"
+                }
+                failure {
+                    echo "Salgo cuando la etapa 1 se ejecutó con errores"
+                }
+            }
+        }
+        stage('Etapa 2') { // Pruebas
+            stages {
+                stage('Etapa 2.1') {    // Pruebas unitarias
+                    steps {
+                        echo "Dentro de la etapa 2.1"
+                    }
+                }
+                stage('Etapa 2.2') {    // Pruebas de calidad de código
+                    steps {
+                        echo "Dentro de la etapa 2.2"
+                    }
+                }
+            }
+            post {
+                always {
+                    echo "Salgo siempre que se ejecuta la etapa 2"
+                }
+                success {
+                    echo "Salgo cuando la etapa 2 se ejecutó correctamente"
+                }
+                failure {
+                    echo "Salgo cuando la etapa 2 se ejecutó con errores"
+                }
+            }
+        }
+    }
+}

@@ -1,21 +1,131 @@
-// Sintaxis declarativa.
-
 pipeline {
+    // Triggers
+    // Parametros
+    // Tareas condicionales
+    parameters {
+      booleanParam defaultValue: true, description: 'Indica si deben ejecutarse las pruebas', name: 'PROBAR'
+    }
+    
+    triggers {
+      pollSCM '* * * * *'
+    }
+    
+    agent {
+        docker {
+            image "maven:3.8.4-jdk-8"
+        }
+    } 
+    
     stages {
-        stage('Etapa 1') {
+        stage('1 - Compilación') {
             steps {
-                // Llamadas a plugins. Su sintaxis depende del plugin concreto que use...
-                // Y aqui me puedo encontrar con dificultades... Dependerá del plugin
-                // El que lo hayan documentado bien o no... para ver cómo hay que llamarlo.
-                
-                // Mostrar algo en el log de Jenkins
-                echo "Dentro de la etapa 1"
+                sh "mvn -f miproyecto/pom.xml compile"
             }
         }
-        stage('Etapa 2') {
-            steps {
-                echo "Dentro de la etapa 2"
+        stage('2 - Pruebas') {
+            stages {
+                stage('2.1 - Compilación pruebas') {
+                    steps {
+                        sh """
+                            cd miproyecto
+                            mvn test-compile
+                        """
+                    }
+                }
+                stage('2.2 - Ejecución pruebas') {
+                    //parallel
+                    stages {
+                        stage('2.2.1 - Pruebas Unitarias') {
+                            steps {
+                                sh "cd miproyecto && mvn test" // Ejecutando pruebas unitarias
+                            }
+                            post{
+                                always {
+                                    junit 'miproyecto/target/surefire-reports/*.xml'
+                                }
+                            }                            
+                        }
+                        stage('2.2.2 - Sonarqube') {
+                            
+                            matrix {
+                                axes {
+                                    axis {
+                                        name 'SISTEMA_OPERATIVO'
+                                        values 'Linux','Macos','BSD'
+                                    }
+                                    axis {
+                                        name 'TIPO_SERVIDOR_WEB'
+                                        values 'nginx','apache'
+                                    }
+                                }
+                                excludes {
+                                    exclude {
+                                        axis {
+                                            name 'SISTEMA_OPERATIVO'
+                                            values 'Linux'
+                                        }
+                                        axis {
+                                            name 'TIPO_SERVIDOR_WEB'
+                                            values 'apache'
+                                        }
+                                    }
+                                }
+                                stages {
+                                    stage("Instalar"){
+                                        steps{
+                                            echo "Voy a instalar el programa sobre $SISTEMA_OPERATIVO, utilizando $TIPO_SERVIDOR_WEB"
+                                        }
+                                    }
+                                }
+                            }
+
+                            
+                            //steps {
+                            //    withSonarQubeEnv('MiSonarQube') {
+                   
+                            //        sh """
+                            //            cd miproyecto
+                            //            mvn sonar:sonar \
+                            //                -Dsonar.projectKey=curso1 \
+                            //                -Dsonar.host.url=http://172.31.6.161:8081 \
+                            //                -Dsonar.login=b59496805c9cd3ceda689ca2ef264ebf30fddf82
+                            //        """
+                            //        // Ejecutando pruebas de calidad de codigo SonarQube
+                                    //ansible chef puppet terraform
+                                    //sh """
+                                    //sonar-scanner
+                                    //"""
+                            //    }
+                            //    waitForQualityGate abortPipeline: false
+                            //}
+                        }
+                    }
+                }
             }
+            when {
+                expression { return params.PROBAR }
+            }
+        }
+        stage('3 - Empaquetado') {
+            steps {
+                sh "mvn -f miproyecto/pom.xml package"
+            }
+            post {
+                success {
+                    archiveArtifacts artifacts: 'miproyecto/target/*.jar', followSymlinks: false
+                }
+            }
+            
         }
     }
+    
+//    post {
+//        always {
+//            cleanWs deleteDirs: true, patterns: [[pattern: 'miproyecto/target', type: 'INCLUDE']]
+//        }
+//    }
 }
+
+// √ Borrar al final la carpeta target
+// √ Publicar los resultados de las pruebas
+// √ Guardar el JAR
